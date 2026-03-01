@@ -159,21 +159,18 @@ def main():
 
     @handle_errors
     def restart_service():
-        """Trigger the restart systemd service."""
+        """Trigger a service restart by exiting the process.
+        
+        When running under systemd with Restart=always, simply exiting
+        will cause systemd to automatically restart the service.
+        """
         try:
-            result = subprocess.run(["systemctl", "start", "ddcutil_MQTT_restart.service"], 
-                                  capture_output=True, text=True, timeout=5)
-            if result.returncode == 0:
-                logger.info("Service restart initiated successfully")
-                return True
-            else:
-                logger.error(f"Failed to start restart service: {result.stderr}")
-                return False
-        except subprocess.TimeoutExpired:
-            logger.error("Restart service command timed out")
-            return False
+            logger.info("Exiting process to trigger systemd restart")
+            sys.exit(0)
         except Exception as e:
-            logger.error(f"Error triggering restart service: {e}")
+            logger.error(f"Error during restart: {e}")
+            return False
+            logger.error(f"Error during restart: {e}")
             return False
 
     # Centralized MQTT state publishing

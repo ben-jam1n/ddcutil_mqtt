@@ -43,7 +43,6 @@ deactivate
 # 5. Set script permissions
 echo "Setting permissions..."
 chmod +x "$INSTALL_DIR/ddcutil_MQTT.py"
-chmod +x "$INSTALL_DIR/ddcutil_MQTT_restart.sh"
 
 # 6. Create systemd service file
 echo "Creating systemd service..."
@@ -66,30 +65,10 @@ StandardError=journal
 WantedBy=multi-user.target
 EOF
 
-# 7. Create restart service file
-echo "Creating systemd restart service..."
-sudo tee /etc/systemd/system/ddcutil_MQTT_restart.service > /dev/null <<EOF
-[Unit]
-Description=DDCutil MQTT Service Restart Handler https://github.com/ben-jam1n/ddcutil_mqtt
-After=ddcutil_MQTT.service
-PartOf=ddcutil_MQTT.service
-
-[Service]
-Type=oneshot
-ExecStart=$INSTALL_DIR/ddcutil_MQTT_restart.sh
-User=root
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
 # 8. Enable and start the service
 echo "Enabling and starting systemd services..."
 sudo systemctl daemon-reload
 sudo systemctl enable ddcutil_MQTT.service
-sudo systemctl enable ddcutil_MQTT_restart.service
 
 # 9. Final instructions
 echo ""
