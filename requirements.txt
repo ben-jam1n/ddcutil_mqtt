@@ -1,0 +1,3 @@
+paho-mqtt>=1.6.0
+pyyaml>=5.4.0
+ddcutil>=2.2.4

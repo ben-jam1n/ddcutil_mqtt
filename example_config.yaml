@@ -1,0 +1,193 @@
+# Example YAML config for MQTT ddcutil Monitor Control
+# This file demonstrates each section and option with comments.
+# All options shown here found working on a Dell U4323QE, but may need adjustments for other models/brands.
+# Options commented out are items I have yet to get working on my monitor, so the codes are not validated yet. Use with caution and refer to your monitor's DDC/CI documentation for correct codes.
+
+# Logging level: DEBUG, INFO, WARNING, ERROR
+log_level: INFO
+
+# MQTT broker connection details
+mqtt_broker: xxx.xxx.xxx.xxx  # IP or hostname of your MQTT broker
+mqtt_port: 1883          # Default MQTT port
+mqtt_username: mqtt_username      # MQTT username
+mqtt_password: mqtt_password  # MQTT password
+
+device_name: Monitor_XYZ  # Unique name for this monitor/device
+
+polling_interval: 30      # How often (in seconds) to poll monitor state
+
+debounce_delay: 0.5       # Delay (in seconds) to prevent rapid repeated changes
+
+# Shared input source options using YAML anchor
+## Primary input source options
+input_source_options: &input_source_options
+  - name: USB C         # Display name for this input
+    vcp_value: "0x1b"   # VCP code value for this input
+  - name: HDMI 1
+    vcp_value: "0x11"
+  - name: HDMI 2
+    vcp_value: "0x12"
+  - name: DisplayPort 1
+    vcp_value: "0x0f"
+  - name: DisplayPort 2
+    vcp_value: "0x13"
+
+## Secondary input source options (if supported by monitor)
+sub_input_source_options: &sub_input_source_options
+  - name: USB C
+    vcp_value: "0xfb"
+  - name: HDMI 1
+    vcp_value: "0xf1"
+  - name: HDMI 2
+    vcp_value: "0xf2"
+  - name: DisplayPort 1
+    vcp_value: "0xef"
+  - name: DisplayPort 2
+    vcp_value: "0xf3"
+
+## Example of a third input source set (if monitor supports more than 2)
+sub_sub_input_source_options: &sub_sub_input_source_options
+  - name: USB C
+    vcp_value: "0x7b"
+  - name: HDMI 1
+    vcp_value: "0x3b"
+  - name: HDMI 2
+    vcp_value: "0x5b"
+  - name: DisplayPort 1
+    vcp_value: "0xfb"
+  - name: DisplayPort 2
+    vcp_value: "0x7b"
+
+# List of controls to expose via MQTT/Home Assistant
+controls:
+  # Primary input source selector
+  - name: Primary Input Source
+    key: primary_input
+    type: select           # Control type: select, switch, or number
+    vcp_code: "60"         # VCP code for primary input source
+    options: *input_source_options  # Use shared options
+    entity_category: config   # Optional: config, diagnostic, or omit for none
+  
+  # Sub/Secondary input source selector (if supported)
+  - name: Secondary Input Source
+    key: secondary_input
+    type: select          # Control type: select, switch, or number
+    vcp_code: E8          # VCP code for sub input source
+    options: *sub_input_source_options
+    entity_category: config   # Optional: config, diagnostic, or omit for none
+
+  #Sub-sub/Third input source selector (if supported)
+  # - name: Third Input Source
+  #   key: third_input
+  #   type: select          # Control type: select, switch, or number
+  #   vcp_code: ??          # VCP code for sub-sub input source (if different from secondary)
+  #   options: *sub_sub_input_source_options
+  #   entity_category: config   # Optional: config, diagnostic, or omit for none
+
+  # Picture-by-Picture toggle
+  - name: Picture-by-Picture
+    key: pbp
+    type: switch           # Switch type for on/off
+    vcp_code: E9           # VCP code for PBP
+    on_value: "0x24"      # Value to enable PBP
+    off_value: "0x00"     # Value to disable PBP
+
+  # PbP/PiP Mode selector
+  - name: PbP/PiP Mode
+    key: pbp_pip_mode
+    type: select
+    vcp_code: E9
+    options:
+      - name: Off
+        vcp_value: "0x00"
+      - name: PbP Left/Right
+        vcp_value: "0x24"
+      - name: PbP Top/Bottom
+        vcp_value: "0x21"
+      - name: PiP Top-Left
+        vcp_value: "0x31"
+      - name: PiP Top-Right
+        vcp_value: "0x32"
+      - name: PiP Bottom-Left
+        vcp_value: "0x33"
+      - name: PiP Bottom-Right
+        vcp_value: "0x34"
+      # Add more as you map them
+
+    #Toggle PiP Window Size between big or small 
+  - name: PiP Change Size
+    key: pip_change_size
+    type: button  # Home Assistant button entity
+    actions:
+      - vcp_code: E9
+        vcp_value: "0x01"
+    entity_category: config 
+
+  - name: PiP Move Sub Input
+    key: pip_move_window
+    type: button  # Home Assistant button entity
+    actions:
+      - vcp_code: E9
+        vcp_value: "0x02"
+    entity_category: config 
+
+  - name: Swap Main and Sub Input
+    key: swap_inputs
+    type: button  # Home Assistant button entity
+    actions:
+      - vcp_code: E5
+        vcp_value: "0xF001"
+    # entity_category: diagnostic 
+
+
+  - name: Swap USB Connection
+    key: swap_usbs
+    type: button  # Home Assistant button entity
+    actions:
+      - vcp_code: E7
+        vcp_value: "0xFF00"
+    # entity_category: config 
+
+  # Return to Single Display button (now a Home Assistant button entity)
+  - name: Return to Single Display
+    key: single_display
+    type: button  # Home Assistant button entity
+    actions:
+      - vcp_code: E9
+        vcp_value: "0x00"
+
+  # Custom 'Preset' button - Can set multiple VCP codes in sequence to restore a specific setup
+  - name: Custom Preset 1
+    key: main_preset1
+    type: button  # Home Assistant button entity
+    actions:
+      - vcp_code: 60  # Primary input VCP code
+        vcp_value: "0x1b"         # Example: USB-C
+      - vcp_code: E9              # PbP/PiP Mode VCP code 
+        vcp_value: "0x00"         # Example: Return to single display (no PbP/PiP)
+    entity_category: diagnostic   # Optional: config, diagnostic, or omit for none
+
+  # Service Restart button (diagnostic)
+  - name: Restart Service
+    key: restart_service
+    type: button
+    entity_category: diagnostic  # Only shows in developer/diagnostic view
+    is_restart_button: true  # Flag to trigger service restart instead of DDC commands
+
+  # Monitor brightness control
+  - name: Monitor Brightness
+    key: brightness
+    type: number           # Number type for range
+    vcp_code: "10"        # VCP code for brightness
+    min: 0                 # Minimum value
+    max: 100               # Maximum value
+    step: 1                # Step size
+
+  # Monitor volume control
+  - name: Monitor Volume
+    key: volume
+    type: number
+    vcp_code: "62"        # VCP code for volume
+    min: 0
+    max: 100
+    step: 5
