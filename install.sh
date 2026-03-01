@@ -43,6 +43,7 @@ deactivate
 # 5. Set script permissions
 echo "Setting permissions..."
 chmod +x "$INSTALL_DIR/ddcutil_MQTT.py"
+chmod +x "$INSTALL_DIR/ddcutil_MQTT_restart.sh"
 
 # 6. Create systemd service file
 echo "Creating systemd service..."

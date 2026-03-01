@@ -201,7 +201,7 @@ def main():
         discovery_payloads = []
         device_info = {
             "identifiers": [SANITIZED_DEVICE_NAME],
-            "name": f"{DEVICE_NAME} Monitor",
+            "name": f"{DEVICE_NAME}",
             "manufacturer": "ben-jam1n",
             "model": "ddcutil to MQTT 0.2"
         }
