@@ -51,6 +51,11 @@ The script can be installed as a systemd service on low-power devices like a Ras
 ### Semi-Automated Installation
 The `install.sh` script will clone the repository to a local directory, install dependencies, and set up the script as a systemd service.
 
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ben-jam1n/ddcutil_mqtt/main/install.sh)"
+```
+
+
 After running the script, you'll need to:
 1. Update `config.yaml` with your specific monitor and MQTT broker settings
 * See `Configuration_help.md` for more information about configuration options. 
@@ -63,21 +68,29 @@ After running the script, you'll need to:
 1. Install System Dependencies
 ```bash
 sudo apt-get update
-sudo apt-get install -y python3 python3-pip ddcutil git
+sudo apt-get install -y python3 python3-venv ddcutil git
 ```
 
 2. Clone the Project Files
 ```bash
-git clone https://github.com/yourusername/ddcutil_mqtt.git /opt/ddcutil_MQTT
+git clone https://github.com/ben-jam1n/ddcutil_mqtt.git /opt/ddcutil_MQTT
 cd /opt/ddcutil_MQTT
 ```
 
-3. Install Python Dependencies
+3. Create and Activate Python Virtual Environment
 ```bash
-sudo pip3 install -r requirements.txt
+python3 -m venv /opt/ddcutil_MQTT/venv
+source /opt/ddcutil_MQTT/venv/bin/activate
 ```
 
-4. Configure the Script
+4. Install Python Dependencies
+```bash
+pip install --upgrade pip setuptools wheel
+pip install -r requirements.txt
+deactivate
+```
+
+5. Configure the Script
 Edit `config.yaml` to match your monitor and MQTT broker setup. See the included example `example_config.yaml` for details.
 
 ---
@@ -87,6 +100,7 @@ Edit `config.yaml` to match your monitor and MQTT broker setup. See the included
 **Manual Test**
 ```bash
 cd /opt/ddcutil_MQTT
+source venv/bin/activate
 python3 ddcutil_MQTT.py
 ```
 
@@ -104,7 +118,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /opt/ddcutil_MQTT/ddcutil_MQTT.py /opt/ddcutil_MQTT/config.yaml
+ExecStart=/opt/ddcutil_MQTT/venv/bin/python /opt/ddcutil_MQTT/ddcutil_MQTT.py /opt/ddcutil_MQTT/config.yaml
 WorkingDirectory=/opt/ddcutil_MQTT
 Restart=always
 RestartSec=10

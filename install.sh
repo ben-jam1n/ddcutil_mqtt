@@ -13,7 +13,7 @@ GITHUB_URL="https://github.com/ben-jam1n/ddcutil_mqtt.git"
 # 1. Install system dependencies
 echo "Installing system dependencies..."
 sudo apt-get update
-sudo apt-get install -y python3 python3-pip ddcutil git
+sudo apt-get install -y python3 python3-venv ddcutil git
 
 # 2. Create install directory
 echo "Creating installation directory..."
@@ -29,9 +29,16 @@ else
     git clone "$GITHUB_URL" "$INSTALL_DIR"
 fi
 
-# 4. Install required Python packages (globally for systemd service)
+# 4. Create and activate Python virtual environment
+echo "Creating Python virtual environment..."
+python3 -m venv "$INSTALL_DIR/venv"
+source "$INSTALL_DIR/venv/bin/activate"
+
+# 5. Install required Python packages in venv
 echo "Installing Python dependencies..."
-sudo pip3 install -r "$INSTALL_DIR/requirements.txt"
+pip install --upgrade pip setuptools wheel
+pip install -r "$INSTALL_DIR/requirements.txt"
+deactivate
 
 # 5. Set script permissions
 echo "Setting permissions..."
@@ -46,7 +53,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 $INSTALL_DIR/ddcutil_MQTT.py $INSTALL_DIR/config.yaml
+ExecStart=$INSTALL_DIR/venv/bin/python $INSTALL_DIR/ddcutil_MQTT.py $INSTALL_DIR/config.yaml
 WorkingDirectory=$INSTALL_DIR
 Restart=always
 RestartSec=10
@@ -83,7 +90,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable ddcutil_MQTT.service
 sudo systemctl enable ddcutil_MQTT_restart.service
 
-# 8. Final instructions
+# 9. Final instructions
 echo ""
 echo "=========================================="
 echo "Installation Complete!"
