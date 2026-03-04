@@ -66,24 +66,28 @@ After running the script, you'll need to:
 ### Manual Installation Steps
 
 1. Install System Dependencies
+
 ```bash
 sudo apt-get update
 sudo apt-get install -y python3 python3-venv ddcutil git
 ```
 
 2. Clone the Project Files
+
 ```bash
 git clone https://github.com/ben-jam1n/ddcutil_mqtt.git /opt/ddcutil_MQTT
 cd /opt/ddcutil_MQTT
 ```
 
 3. Create and Activate Python Virtual Environment
+
 ```bash
 python3 -m venv /opt/ddcutil_MQTT/venv
 source /opt/ddcutil_MQTT/venv/bin/activate
 ```
 
 4. Install Python Dependencies
+
 ```bash
 pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
@@ -91,6 +95,7 @@ deactivate
 ```
 
 5. Configure the Script
+
 Edit `config.yaml` to match your monitor and MQTT broker setup. See the included example `example_config.yaml` for details.
 
 ---
@@ -185,9 +190,8 @@ ddcutil:
 * https://github.com/rockowitz/ddcutil
 
 For reference of the DDC/VPC configurations available, and interpreting outputs, many thanks to the work done by others: 
-https://gist.github.com/lainosantos/06d233f6c586305cde67489c2e4a764d
-https://github.com/rockowitz/ddcutil/issues/268
-https://github.com/ScriptGod1337/kvm/blob/d81776dbbd821176195b0b2afe866ee814cdf234/src/kvmutil/kvmutil.py#L7
-https://github.com/moimart/ddc-mqtt/
-
-https://github.com/Penpal1278/ddcutil2MQTT/blob/main/ddcutil2MQTT.py
+* https://gist.github.com/lainosantos/06d233f6c586305cde67489c2e4a764d
+* https://github.com/rockowitz/ddcutil/issues/268
+* https://github.com/ScriptGod1337/kvm/blob/d81776dbbd821176195b0b2afe866ee814cdf234/src/kvmutil/kvmutil.py#L7
+* https://github.com/moimart/ddc-mqtt/
+* https://github.com/Penpal1278/ddcutil2MQTT/blob/main/ddcutil2MQTT.py
