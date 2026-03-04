@@ -21,6 +21,8 @@ import subprocess
 import time
 import threading
 import functools
+import socket
+
 try:
     import yaml
 except ImportError:
@@ -45,6 +47,7 @@ def load_config(config_path):
             return yaml.safe_load(config_file)
         else:
             return json.load(config_file)
+
 
 # =========================
 # Logging Setup
@@ -79,6 +82,22 @@ def setup_logging(log_level):
     return logger
 
 # =========================
+# Local IP Address Utility (for diagnostics)
+# =========================
+def get_local_ip(broker_ip):
+    """
+    Determines the local IP address by simulating a connection to the MQTT broker.
+    This doesn't actually connect, just determines which local interface would be used.
+    """
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect((broker_ip, 80))
+            local_ip = s.getsockname()[0]
+        return local_ip
+    except Exception as e:
+        raise RuntimeError(f"Unable to determine LAN IP: {e}")
+
+# =========================
 # Main Application Logic
 # =========================
 def main():
@@ -88,6 +107,7 @@ def main():
     default_config_path = os.path.join(script_dir, "config.yaml")
     config_path = sys.argv[1] if len(sys.argv) > 1 else default_config_path
     config = load_config(config_path)
+
 
     log_level = config.get("log_level", "INFO").upper()
     logger = setup_logging(log_level)
@@ -106,6 +126,13 @@ def main():
     MQTT_TOPIC_STATE = f"{TOPIC_PREFIX}/state"
 
     DEBOUNCE_DELAY = config.get("debounce_delay", 0.5)
+
+    # Get local IP address for diagnostics sensor
+    try:
+        local_ip = get_local_ip(MQTT_BROKER)
+    except Exception as e:
+        logger.warning(f"Could not determine local IP address: {e}")
+        local_ip = "unknown"
 
     # --- DDC Command Helpers ---
     def handle_errors(func):
@@ -170,8 +197,6 @@ def main():
         except Exception as e:
             logger.error(f"Error during restart: {e}")
             return False
-            logger.error(f"Error during restart: {e}")
-            return False
 
     # Centralized MQTT state publishing
     def publish_state(client, topic, value, retain=True):
@@ -197,11 +222,33 @@ def main():
         logger.debug("Publishing MQTT discovery messages...")
         discovery_payloads = []
         device_info = {
-            "identifiers": [SANITIZED_DEVICE_NAME],
-            "name": f"{DEVICE_NAME}",
-            "manufacturer": "ben-jam1n",
-            "model": "ddcutil to MQTT"
+                "identifiers": [SANITIZED_DEVICE_NAME],
+                "name": f"{DEVICE_NAME}",
+                "manufacturer": "ben-jam1n",
+                "configuration_url": "https://github.com/ben-jam1n/ddcutil_mqtt",
+                "model": "ddcutil to MQTT",
         }
+        origin_info = {
+                "support_url": "https://github.com/ben-jam1n/ddcutil_mqtt",
+                "name": "ddcutil MQTT"
+        }
+        
+        # Add IP Address as a diagnostic sensor
+        ip_sensor_payload = {
+            "name": "IP Address",
+            "state_topic": f"{TOPIC_PREFIX}/ip_address",
+            "device": device_info,
+            "origin": origin_info,
+            "unique_id": f"{SANITIZED_DEVICE_NAME}_ip_address",
+            "entity_category": "diagnostic",
+            "icon": "mdi:network"
+        }
+        ip_sensor_topic = f"homeassistant/sensor/{SANITIZED_DEVICE_NAME}_ip_address/config"
+        discovery_payloads.append({"topic": ip_sensor_topic, "payload": ip_sensor_payload})
+        
+        # Publish the IP address value
+        client.publish(f"{TOPIC_PREFIX}/ip_address", local_ip, retain=True)
+        
         for control in config["controls"]:
             key = control["key"]
             name = control["name"]
@@ -213,6 +260,7 @@ def main():
                     "command_topic": MQTT_TOPIC_COMMAND,
                     "payload_press": f"{key}:press",
                     "device": device_info,
+                    "origin": origin_info,
                     "unique_id": f"{SANITIZED_DEVICE_NAME}_{key}_button"
                 }
                 if entity_category:
@@ -232,6 +280,7 @@ def main():
                     "state_on": "on",
                     "state_off": "off",
                     "device": device_info,
+                    "origin": origin_info,
                     "unique_id": f"{SANITIZED_DEVICE_NAME}_{key}_switch",
                     "optimistic": True
                 }
@@ -248,6 +297,7 @@ def main():
                     "options": options,
                     "command_template": f"{key}:{{{{ value }}}}",
                     "device": device_info,
+                    "origin": origin_info,
                     "unique_id": f"{SANITIZED_DEVICE_NAME}_{key}_select",
                     "optimistic": True
                 }
@@ -266,6 +316,7 @@ def main():
                     "command_template": f"{key}:{{{{ value }}}}",
                     "state_value_template": "{{ value if value.isdigit() else '' }}",
                     "device": device_info,
+                    "origin": origin_info,
                     "unique_id": f"{SANITIZED_DEVICE_NAME}_{key}_number",
                     "optimistic": True
                 }
