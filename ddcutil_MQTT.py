@@ -177,8 +177,6 @@ def main():
         except Exception as e:
             logger.error(f"Error during restart: {e}")
             return False
-            logger.error(f"Error during restart: {e}")
-            return False
 
     # Centralized MQTT state publishing
     def publish_state(client, topic, value, retain=True):
@@ -206,13 +204,30 @@ def main():
         device_info = {
                 "identifiers": [SANITIZED_DEVICE_NAME],
                 "name": f"{DEVICE_NAME}",
-                "manufacturer": "ben-jam1n",
+                "manufacturer": "https://github.com/ben-jam1n/ddcutil_mqtt",
                 "model": "ddcutil to MQTT",
         }
         origin_info = {
                 "support_url": "https://github.com/ben-jam1n/ddcutil_mqtt",
                 "name": "ddcutil MQTT"
         }
+        
+        # Add IP Address as a diagnostic sensor
+        ip_sensor_payload = {
+            "name": "IP Address",
+            "state_topic": f"{TOPIC_PREFIX}/ip_address",
+            "device": device_info,
+            "origin": origin_info,
+            "unique_id": f"{SANITIZED_DEVICE_NAME}_ip_address",
+            "entity_category": "diagnostic",
+            "icon": "mdi:network"
+        }
+        ip_sensor_topic = f"homeassistant/sensor/{SANITIZED_DEVICE_NAME}_ip_address/config"
+        discovery_payloads.append({"topic": ip_sensor_topic, "payload": ip_sensor_payload})
+        
+        # Publish the IP address value
+        client.publish(f"{TOPIC_PREFIX}/ip_address", local_ip, retain=True)
+        
         for control in config["controls"]:
             key = control["key"]
             name = control["name"]
