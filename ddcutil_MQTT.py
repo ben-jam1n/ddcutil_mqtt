@@ -210,7 +210,6 @@ def main():
                 "model": "ddcutil to MQTT",
                 "configuration_url": f"http://{get_local_ip()}",
                 "origin": {
-                    "name": "ddcutil_MQTT.py",
                     "url": "https://github.com/ben-jam1n/ddcutil_mqtt"
                 }
         }
