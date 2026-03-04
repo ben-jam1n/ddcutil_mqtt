@@ -208,13 +208,8 @@ def main():
                 "name": f"{DEVICE_NAME}",
                 "manufacturer": "ben-jam1n",
                 "model": "ddcutil to MQTT",
-                "dev":{
-                    "configuration_url": f"{get_local_ip()}"
-                    },
-                "o": {
-                    "name": "ddcutil_MQTT.py",
-                    "url": "https://github.com/ben-jam1n/ddcutil_mqtt"
-                    }
+                "configuration_url": f"{get_local_ip()}",
+                "url": "https://github.com/ben-jam1n/ddcutil_mqtt"
         }
         for control in config["controls"]:
             key = control["key"]
