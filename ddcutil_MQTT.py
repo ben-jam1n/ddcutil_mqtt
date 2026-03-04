@@ -208,8 +208,11 @@ def main():
                 "name": f"{DEVICE_NAME}",
                 "manufacturer": "ben-jam1n",
                 "model": "ddcutil to MQTT",
-                "configuration_url": f"http://{get_local_ip()}",
-                "support_url": "https://github.com/ben-jam1n/ddcutil_mqtt"
+                "configuration_url": f"http://{get_local_ip()}"
+        }
+        origin_info = {
+                "support_url": "https://github.com/ben-jam1n/ddcutil_mqtt",
+                "name": "ddcutil MQTT"
         }
         for control in config["controls"]:
             key = control["key"]
@@ -222,6 +225,7 @@ def main():
                     "command_topic": MQTT_TOPIC_COMMAND,
                     "payload_press": f"{key}:press",
                     "device": device_info,
+                    "origin": origin_info,
                     "unique_id": f"{SANITIZED_DEVICE_NAME}_{key}_button"
                 }
                 if entity_category:
@@ -241,6 +245,7 @@ def main():
                     "state_on": "on",
                     "state_off": "off",
                     "device": device_info,
+                    "origin": origin_info,
                     "unique_id": f"{SANITIZED_DEVICE_NAME}_{key}_switch",
                     "optimistic": True
                 }
@@ -257,6 +262,7 @@ def main():
                     "options": options,
                     "command_template": f"{key}:{{{{ value }}}}",
                     "device": device_info,
+                    "origin": origin_info,
                     "unique_id": f"{SANITIZED_DEVICE_NAME}_{key}_select",
                     "optimistic": True
                 }
@@ -275,6 +281,7 @@ def main():
                     "command_template": f"{key}:{{{{ value }}}}",
                     "state_value_template": "{{ value if value.isdigit() else '' }}",
                     "device": device_info,
+                    "origin": origin_info,
                     "unique_id": f"{SANITIZED_DEVICE_NAME}_{key}_number",
                     "optimistic": True
                 }
