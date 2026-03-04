@@ -21,7 +21,7 @@ import subprocess
 import time
 import threading
 import functools
-import socket
+
 
 try:
     import yaml
@@ -47,10 +47,7 @@ def load_config(config_path):
             return yaml.safe_load(config_file)
         else:
             return json.load(config_file)
-def get_local_ip():
-    hostname = socket.gethostname()
-    ip_address = socket.gethostbyname(hostname)
-    return ip_address
+
 # =========================
 # Logging Setup
 # =========================
@@ -94,7 +91,6 @@ def main():
     config_path = sys.argv[1] if len(sys.argv) > 1 else default_config_path
     config = load_config(config_path)
 
-    local_ip = get_local_ip()
 
     log_level = config.get("log_level", "INFO").upper()
     logger = setup_logging(log_level)
@@ -204,7 +200,8 @@ def main():
         device_info = {
                 "identifiers": [SANITIZED_DEVICE_NAME],
                 "name": f"{DEVICE_NAME}",
-                "manufacturer": "https://github.com/ben-jam1n/ddcutil_mqtt",
+                "manufacturer": "ben-jam1n",
+                "url": "https://github.com/ben-jam1n/ddcutil_mqtt",
                 "model": "ddcutil to MQTT",
         }
         origin_info = {
@@ -212,21 +209,21 @@ def main():
                 "name": "ddcutil MQTT"
         }
         
-        # Add IP Address as a diagnostic sensor
-        ip_sensor_payload = {
-            "name": "IP Address",
-            "state_topic": f"{TOPIC_PREFIX}/ip_address",
-            "device": device_info,
-            "origin": origin_info,
-            "unique_id": f"{SANITIZED_DEVICE_NAME}_ip_address",
-            "entity_category": "diagnostic",
-            "icon": "mdi:network"
-        }
-        ip_sensor_topic = f"homeassistant/sensor/{SANITIZED_DEVICE_NAME}_ip_address/config"
-        discovery_payloads.append({"topic": ip_sensor_topic, "payload": ip_sensor_payload})
+        # # Add IP Address as a diagnostic sensor
+        # ip_sensor_payload = {
+        #     "name": "IP Address",
+        #     "state_topic": f"{TOPIC_PREFIX}/ip_address",
+        #     "device": device_info,
+        #     "origin": origin_info,
+        #     "unique_id": f"{SANITIZED_DEVICE_NAME}_ip_address",
+        #     "entity_category": "diagnostic",
+        #     "icon": "mdi:network"
+        # }
+        # ip_sensor_topic = f"homeassistant/sensor/{SANITIZED_DEVICE_NAME}_ip_address/config"
+        # discovery_payloads.append({"topic": ip_sensor_topic, "payload": ip_sensor_payload})
         
-        # Publish the IP address value
-        client.publish(f"{TOPIC_PREFIX}/ip_address", local_ip, retain=True)
+        # # Publish the IP address value
+        # client.publish(f"{TOPIC_PREFIX}/ip_address", local_ip, retain=True)
         
         for control in config["controls"]:
             key = control["key"]
