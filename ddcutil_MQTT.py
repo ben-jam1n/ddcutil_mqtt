@@ -21,6 +21,8 @@ import subprocess
 import time
 import threading
 import functools
+import socket
+
 try:
     import yaml
 except ImportError:
@@ -45,7 +47,10 @@ def load_config(config_path):
             return yaml.safe_load(config_file)
         else:
             return json.load(config_file)
-
+def get_local_ip():
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    return ip_address
 # =========================
 # Logging Setup
 # =========================
@@ -88,6 +93,8 @@ def main():
     default_config_path = os.path.join(script_dir, "config.yaml")
     config_path = sys.argv[1] if len(sys.argv) > 1 else default_config_path
     config = load_config(config_path)
+
+    local_ip = get_local_ip()
 
     log_level = config.get("log_level", "INFO").upper()
     logger = setup_logging(log_level)
@@ -200,7 +207,9 @@ def main():
             "identifiers": [SANITIZED_DEVICE_NAME],
             "name": f"{DEVICE_NAME}",
             "manufacturer": "ben-jam1n",
-            "model": "ddcutil to MQTT"
+            "model": "ddcutil to MQTT",
+            "cu": f"{get_local_ip()}",
+            "url": "https://github.com/ben-jam1n/ddcutil_mqtt"
         }
         for control in config["controls"]:
             key = control["key"]
