@@ -200,7 +200,7 @@ def main():
             "identifiers": [SANITIZED_DEVICE_NAME],
             "name": f"{DEVICE_NAME}",
             "manufacturer": "ben-jam1n",
-            "model": "ddcutil to MQTT 0.2"
+            "model": "ddcutil to MQTT"
         }
         for control in config["controls"]:
             key = control["key"]

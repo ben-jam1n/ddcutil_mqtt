@@ -1,29 +1,27 @@
-# ddcutil MQTT
+# ddcutil MQTT  
 V0.2
 
-**Remotely control a display/monitor (input selection, KVM settings, volume, brightness, etc.) from Home Assistant (or other automation systems) via ddcutil and MQTT with auto discovery.**
+**Bring full remote control to your monitor—inputs, KVM routing, brightness, volume, PiP/PbP, and more—using ddcutil and MQTT with seamless Home Assistant discovery.**
 
-Control a ddcutil-compatible monitor/display via MQTT. 
-Designed for use with Home Assistant and tested with a Dell U4323QE
+`ddcutil MQTT` turns any compatible monitor into a fully automatable device. By exposing DDC/CI controls over MQTT, it lets Home Assistant (or any automation system) adjust display settings instantly and reliably. This is especially powerful for monitors with built‑in KVM features, where switching inputs or USB routing normally requires digging through on‑screen menus.
 
-Especially useful for monitors with built-in KVM functionality, allowing to change inputs, PIP/PbP modes, etc. through Home Assistant (or another automation platform).
-
-My primary usage is an Aqara Zigbee pushbutton switch next to my keyboard that allows for quick input toggling, enabling or disabling PiP/PbP, and swapping the USB connections between inputs. 
+In everyday use, this enables simple workflows like assigning a Zigbee button to toggle inputs, activate PiP/PbP, or swap USB control between machines—all without touching the monitor.
 
 ## Features
-Remotely control monitor settings over the network via MQTT using ddcutil. 
 
-Available Controls:
-* Input Source
-* Sub Input Source*
-* Picture in Picture/Picture By Picture Modes*
-* Brightness
-* Volume
-* USB Uplink*
-* Input Preset
-* Service Restart (diagnostic button)
+Remotely control a ddcutil‑compatible monitor over MQTT with support for Home Assistant auto‑discovery. Designed and tested with the Dell U4323QE, but compatible with any display exposing the relevant DDC/CI controls.
 
- *Known to work on Dell monitor with built-in KVM features
+### Available Controls
+
+- **Input Source** — Switch the primary video input.
+- **Sub Input Source*** — Select the secondary input for PiP/PbP modes.
+- **PiP/PbP Modes*** — Enable, disable, or change picture‑in‑picture and picture‑by‑picture layouts.
+- **Brightness** — Adjust display brightness remotely.
+- **Volume** — Control monitor audio output (for displays with built‑in speakers or audio passthrough).
+- **USB Uplink*** — Change which upstream USB port is active for KVM switching.
+- **Input Preset** — Apply predefined input configurations.
+
+\*Known to work on Dell monitors with built‑in KVM features.
 
 ---
 ## About ddcutil
