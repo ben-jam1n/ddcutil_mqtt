@@ -1,5 +1,4 @@
 # ddcutil MQTT  
-V0.2
 
 **Bring full remote control to your monitor—inputs, KVM routing, brightness, volume, PiP/PbP, and more—using ddcutil and MQTT with seamless Home Assistant discovery.**
 
@@ -24,6 +23,9 @@ Remotely control a ddcutil‑compatible monitor over MQTT with support for Home 
 \*Known to work on Dell monitors with built‑in KVM features.
 
 ---
+### Home Assitant Dashboard Example: 
+<img width="513" height="634" alt="image" src="https://github.com/user-attachments/assets/db3a6c15-b3a7-4008-9186-ef09aaf72c27" />
+
 ## About ddcutil
 
 ddcutil is a command-line utility for querying and changing monitor settings using the DDC/CI protocol. It allows you to control features such as brightness, contrast, input source, and more, directly from your computer.
@@ -187,4 +189,5 @@ https://gist.github.com/lainosantos/06d233f6c586305cde67489c2e4a764d
 https://github.com/rockowitz/ddcutil/issues/268
 https://github.com/ScriptGod1337/kvm/blob/d81776dbbd821176195b0b2afe866ee814cdf234/src/kvmutil/kvmutil.py#L7
 https://github.com/moimart/ddc-mqtt/
+
 https://github.com/Penpal1278/ddcutil2MQTT/blob/main/ddcutil2MQTT.py
