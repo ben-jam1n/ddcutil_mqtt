@@ -209,7 +209,7 @@ def main():
                 "manufacturer": "ben-jam1n",
                 "model": "ddcutil to MQTT",
                 "configuration_url": f"http://{get_local_ip()}",
-                "connected_via": f"{get_local_ip()}"
+                "via_device": f"{get_local_ip()}"
         }
         origin_info = {
                 "support_url": "https://github.com/ben-jam1n/ddcutil_mqtt",
