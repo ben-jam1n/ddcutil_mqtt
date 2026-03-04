@@ -208,7 +208,9 @@ def main():
                 "name": f"{DEVICE_NAME}",
                 "manufacturer": "ben-jam1n",
                 "model": "ddcutil to MQTT",
-                "configuration_url": f"{get_local_ip()}",
+                "dev":{
+                    "configuration_url": f"{get_local_ip()}"
+                    },
                 "o": {
                     "name": "ddcutil_MQTT.py",
                     "url": "https://github.com/ben-jam1n/ddcutil_mqtt"
