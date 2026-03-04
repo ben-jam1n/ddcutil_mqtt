@@ -209,7 +209,7 @@ def main():
                 "manufacturer": "ben-jam1n",
                 "model": "ddcutil to MQTT",
                 "configuration_url": f"http://{get_local_ip()}",
-                "url": "https://github.com/ben-jam1n/ddcutil_mqtt"
+                "support_url": "https://github.com/ben-jam1n/ddcutil_mqtt"
         }
         for control in config["controls"]:
             key = control["key"]
