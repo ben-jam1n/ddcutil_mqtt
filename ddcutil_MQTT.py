@@ -204,12 +204,17 @@ def main():
         logger.debug("Publishing MQTT discovery messages...")
         discovery_payloads = []
         device_info = {
-            "identifiers": [SANITIZED_DEVICE_NAME],
-            "name": f"{DEVICE_NAME}",
-            "manufacturer": "ben-jam1n",
-            "model": "ddcutil to MQTT",
-            "cu": f"{get_local_ip()}",
-            "url": "https://github.com/ben-jam1n/ddcutil_mqtt"
+            "dev": {
+                "identifiers": [SANITIZED_DEVICE_NAME],
+                "name": f"{DEVICE_NAME}",
+                "manufacturer": "ben-jam1n",
+                "model": "ddcutil to MQTT",
+                "configuration_url": f"{get_local_ip()}"
+                },
+            "o": {
+                "name": "ddcutil_MQTT.py",
+                "url": "https://github.com/ben-jam1n/ddcutil_mqtt"
+                }
         }
         for control in config["controls"]:
             key = control["key"]
