@@ -201,7 +201,7 @@ def main():
                 "identifiers": [SANITIZED_DEVICE_NAME],
                 "name": f"{DEVICE_NAME}",
                 "manufacturer": "ben-jam1n",
-                "url": "https://github.com/ben-jam1n/ddcutil_mqtt",
+                "configuration_url": "https://github.com/ben-jam1n/ddcutil_mqtt",
                 "model": "ddcutil to MQTT",
         }
         origin_info = {
